@@ -1,0 +1,16 @@
+# Configuration file for apollo-router
+# https://www.apollographql.com/docs/router/configuration/overview
+
+# Router's HTTP server
+supergraph:
+  listen: 0.0.0.0:4000
+  path: /graphql
+  introspection: true
+
+# homepage:
+#   # By default, the router displays a landing page
+#   enabled: false
+
+health-check:
+  listen: 0.0.0.0:8088
+  enabled: true
