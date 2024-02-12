@@ -1,0 +1,22 @@
+---
+# https://github.com/DataDog/datadog-agent/blob/main/pkg/config/config_template.yaml
+# https://docs.datadoghq.com/agent/docker/?tab=standard
+
+api_key:
+
+# https://docs.datadoghq.com/agent/logs/?tab=tailfiles
+# https://docs.datadoghq.com/logs/log_collection/?tab=host#logging-endpoints
+# DD_LOGS_ENABLED=true
+# logs_enabled: true
+
+# The receiver configuration. It is an exact copy of the current OpenTelemetry Collector Receiver Configuration:
+# https://github.com/open-telemetry/opentelemetry-collector/blob/47a899d/receiver/otlpreceiver/config.md
+# Because this configuration is marked as "Beta" by OpenTelemetry, it is subject to change. See also:
+# https://github.com/open-telemetry/opentelemetry-collector#status.
+# https://docs.datadoghq.com/tracing/setup_overview/open_standards/
+experimental:
+  otlp:
+    receiver:
+      protocols:
+        grpc:
+        http:

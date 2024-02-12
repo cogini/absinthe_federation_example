@@ -1,0 +1,6 @@
+# https://docs.datadoghq.com/agent/logs/?tab=tcpudp
+logs:
+  - type: tcp
+    port: 10518
+    service: "absinthe_federation_example"
+    source: "absinthe_federation_example"
