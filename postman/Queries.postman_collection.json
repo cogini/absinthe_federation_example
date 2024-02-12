@@ -1,0 +1,66 @@
+{
+	"info": {
+		"_postman_id": "e4f83749-5e0b-4e5a-bf56-8de41a2a37dd",
+		"name": "Queries",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23505727"
+	},
+	"item": [
+		{
+			"name": "allLinks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"expected = {",
+							"    \"data\": {",
+							"        \"allLinks\": [",
+							"            {",
+							"                \"id\": \"1\",",
+							"                \"url\": \"http://graphql.org/\",",
+							"                \"description\": \"The Best Query Language\"",
+							"            },",
+							"            {",
+							"                \"id\": \"2\",",
+							"                \"url\": \"http://dev.apollodata.com/\",",
+							"                \"description\": \"Awesome GraphQL Client\"",
+							"            },",
+							"        ]",
+							"    }",
+							"}",
+							"",
+							"pm.test(\"Returns all links\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.eql(expected);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query { \n    allLinks {\n         id \n         url \n         description \n    } \n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}:4000/graphql",
+					"host": [
+						"{{base_url}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
