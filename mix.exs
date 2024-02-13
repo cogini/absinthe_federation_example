@@ -61,7 +61,10 @@ defmodule AbsintheFederationExample.MixProject do
 
   defp deps do
     [
+      {:aws_rds_castore, "~> 1.1"},
       {:bandit, "~> 1.2"},
+      {:castore, "~> 1.0"},
+      {:corsica, "~> 2.0"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.2", only: [:dev, :test], runtime: false},
       {:dns_cluster, "~> 0.1.1"},
@@ -71,7 +74,9 @@ defmodule AbsintheFederationExample.MixProject do
       {:excoveralls, "~> 0.18.0", only: [:dev, :test], runtime: false},
       {:finch, "~> 0.13"},
       {:floki, ">= 0.30.0", only: :test},
+      {:gen_smtp, "~> 1.0"},
       {:gettext, "~> 0.20"},
+      {:hackney, "~> 1.9"},
       {:heroicons,
         github: "tailwindlabs/heroicons",
         tag: "v2.1.1",
