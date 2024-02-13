@@ -20,14 +20,14 @@ defmodule AbsintheFederationExampleWeb.ConnCase do
   using do
     quote do
       # The default endpoint for testing
-      @endpoint AbsintheFederationExampleWeb.Endpoint
-
       use AbsintheFederationExampleWeb, :verified_routes
 
       # Import conveniences for testing with connections
-      import Plug.Conn
-      import Phoenix.ConnTest
       import AbsintheFederationExampleWeb.ConnCase
+      import Phoenix.ConnTest
+      import Plug.Conn
+
+      @endpoint AbsintheFederationExampleWeb.Endpoint
     end
   end
 

@@ -18,12 +18,12 @@ defmodule AbsintheFederationExample.DataCase do
 
   using do
     quote do
-      alias AbsintheFederationExample.Repo
-
+      import AbsintheFederationExample.DataCase
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import AbsintheFederationExample.DataCase
+
+      alias AbsintheFederationExample.Repo
     end
   end
 
