@@ -47,6 +47,7 @@ defmodule AbsintheFederationExample.MixProject do
         compile: false,
         depth: 1},
       {:jason, "~> 1.2"},
+      {:junit_formatter, "~> 3.3", only: [:dev, :test], runtime: false},
       {:phoenix, "~> 1.7.11"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 4.0"},
