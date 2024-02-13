@@ -1,23 +1,19 @@
 import Config
 
-# config/runtime.exs is executed for all environments, including
-# during releases. It is executed after compilation and before the
-# system starts, so it is typically used to load production configuration
-# and secrets from environment variables or elsewhere. Do not define
-# any compile-time configuration in here, as it won't be applied.
-# The block below contains prod specific runtime configuration.
+# Allow log level to be set at runtime
+if config_env() == :test do
+  config :logger,
+    level: String.to_existing_atom(System.get_env("LOG_LEVEL") || "warning")
+else
+  config :logger,
+    level: String.to_existing_atom(System.get_env("LOG_LEVEL") || "info")
+end
 
-# ## Using releases
-#
-# If you use `mix release`, you need to explicitly enable the server
-# by passing the PHX_SERVER=true when you start it:
-#
-#     PHX_SERVER=true bin/absinthe_federation_example start
-#
-# Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
-# script that automatically sets the env var above.
-if System.get_env("PHX_SERVER") do
-  config :absinthe_federation_example, AbsintheFederationExampleWeb.Endpoint, server: true
+roles = (System.get_env("ROLES") || "api") |> String.split(",") |> Enum.map(&String.to_atom/1)
+config :absinthe_federation_example, roles: roles
+
+if System.get_env("PHX_SERVER") && :api in roles do
+  config :phoenix_container_example, PhoenixContainerExampleWeb.Endpoint, server: true
 end
 
 if config_env() == :prod do
@@ -34,6 +30,8 @@ if config_env() == :prod do
     # ssl: true,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html
+    # ssl_opts: AwsRdsCAStore.ssl_opts(database_url),
     socket_options: maybe_ipv6
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
@@ -55,12 +53,14 @@ if config_env() == :prod do
 
   config :absinthe_federation_example, AbsintheFederationExampleWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
+    # static_url: [host: "assets." <> host, port: 443, scheme: "https"],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
       # See the documentation on https://hexdocs.pm/bandit/Bandit.html#t:options/0
       # for details about using IPv6 vs IPv4 and loopback vs public addresses.
-      ip: {0, 0, 0, 0, 0, 0, 0, 0},
+      # ip: {0, 0, 0, 0, 0, 0, 0, 0},
+      ip: {0, 0, 0, 0},
       port: port
     ],
     secret_key_base: secret_key_base
@@ -89,8 +89,8 @@ if config_env() == :prod do
   # "priv/ssl/server.key". For all supported SSL configuration
   # options, see https://hexdocs.pm/plug/Plug.SSL.html#configure/1
   #
-  # We also recommend setting `force_ssl` in your config/prod.exs,
-  # ensuring no data is ever sent via http, always redirecting to https:
+  # We also recommend setting `force_ssl` in your endpoint, ensuring
+  # no data is ever sent via http, always redirecting to https:
   #
   #     config :absinthe_federation_example, AbsintheFederationExampleWeb.Endpoint,
   #       force_ssl: [hsts: true]
@@ -114,4 +114,77 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+
+  # Only configure the production mailer if we have AWS credentials
+  if System.get_env("AWS_ACCESS_KEY_ID") || System.get_env("AWS_CONTAINER_CREDENTIALS_RELATIVE_URI") do
+    config :absinthe_federation_example, AbsintheFederationExample.Mailer, adapter: Swoosh.Adapters.ExAwsAmazonSES
+    config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: PhoenixContainerExample.Finch
+    # Disable Swoosh Local Memory Storage
+    config :swoosh, local: false
+  end
+
+  config :libcluster, debug: true
+
+  # https://dmblake.com/elixir-clustering-with-libcluster-and-aws-ecs-fargate-in-cdk
+  case System.get_env("LIBCLUSTER_STRATEGY", "none") do
+    "none" ->
+      config :libcluster, topologies: []
+
+    "gossip" ->
+      # Local testing with docker compose
+      # Use multicast UDP to form a cluster between nodes gossiping a heartbeat
+      # This does not work inside ECS
+      config :libcluster,
+        topologies: [
+          app: [
+            strategy: Cluster.Strategy.Gossip
+          ]
+        ]
+
+    "local" ->
+      # Use epmd to connect to discovered nodes on the local host
+      config :libcluster,
+        topologies: [
+          app: [
+            strategy: Cluster.Strategy.LocalEPMD
+          ]
+        ]
+
+    "dns" ->
+      # Periodically poll DNS to find nodes.
+      # This uses AWS Service Discovery support for ECS.
+      # https://hexdocs.pm/libcluster/Cluster.Strategy.DNSPoll.html
+      # Assumes nodes respond to DNS query (A record) and node name
+      # pattern of <name>@<ip-address>.
+      config :libcluster,
+        topologies: [
+          app: [
+            strategy: Elixir.Cluster.Strategy.DNSPoll,
+            config: [
+              # name of nodes before the IP address (required)
+              node_basename: "prod",
+              # DNS query to find nodes (required)
+              query: "foo-app.foo.internal"
+              # How often to poll in ms
+              # polling_interval: 5_000,
+            ]
+          ],
+          worker: [
+            strategy: Elixir.Cluster.Strategy.DNSPoll,
+            config: [
+              # name of nodes before the IP address (required)
+              node_basename: "prod",
+              # DNS query to find nodes (required)
+              query: "foo-worker.foo.internal"
+              # How often to poll in ms
+              # polling_interval: 5_000,
+            ]
+          ]
+        ]
+  end
+
+  config :ex_aws,
+    access_key_id: [{:system, "AWS_ACCESS_KEY_ID"}, :instance_role],
+    secret_access_key: [{:system, "AWS_SECRET_ACCESS_KEY"}, :instance_role],
+    region: System.get_env("AWS_REGION") || "us-east-1"
 end
