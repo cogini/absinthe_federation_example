@@ -5,25 +5,44 @@ defmodule AbsintheFederationExample.Application do
 
   use Application
 
+  require Logger
+
+  @app :absinthe_federation_example
+
   @impl true
   def start(_type, _args) do
-    children = [
-      AbsintheFederationExampleWeb.Telemetry,
-      AbsintheFederationExample.Repo,
-      {DNSCluster, query: Application.get_env(:absinthe_federation_example, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: AbsintheFederationExample.PubSub},
-      # Start the Finch HTTP client for sending emails
-      {Finch, name: AbsintheFederationExample.Finch},
-      # Start a worker by calling: AbsintheFederationExample.Worker.start_link(arg)
-      # {AbsintheFederationExample.Worker, arg},
-      # Start to serve requests, typically the last entry
-      AbsintheFederationExampleWeb.Endpoint
-    ]
+    OpentelemetryEcto.setup([@app, :repo])
+    :opentelemetry_cowboy.setup()
+    # OpentelemetryPhoenix.setup(adapter: :cowboy2)
+    OpentelemetryLiveView.setup()
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
+    roles = Application.get_env(@app, :roles, [:api])
+    Logger.info("Starting with roles: #{inspect(roles)}")
+
+    children =
+      List.flatten([
+        AbsintheFederationExampleWeb.Telemetry,
+        AbsintheFederationExample.Repo,
+        {DNSCluster, query: Application.get_env(:absinthe_federation_example, :dns_cluster_query) || :ignore},
+        {Phoenix.PubSub, name: AbsintheFederationExample.PubSub},
+        # Start the Finch HTTP client for sending emails
+        {Finch, name: AbsintheFederationExample.Finch},
+        AbsintheFederationExampleWeb.Endpoint,
+        cluster_supervisor()
+      ])
+
     opts = [strategy: :one_for_one, name: AbsintheFederationExample.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  defp cluster_supervisor do
+    topologies = Application.get_env(:libcluster, :topologies, [])
+
+    if Enum.empty?(topologies) do
+      []
+    else
+      [{Cluster.Supervisor, [topologies, [name: AbsintheFederationExample.ClusterSupervisor]]}]
+    end
   end
 
   # Tell Phoenix to update the endpoint configuration
