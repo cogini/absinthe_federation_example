@@ -14,6 +14,16 @@ defmodule AbsintheFederationExampleWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/" do
+    pipe_through :api
+
+    forward "/graphql", Absinthe.Plug, schema: AbsintheFederationExampleWeb.Schema
+
+    forward "/graphiql", Absinthe.Plug.GraphiQL,
+      schema: AbsintheFederationExampleWeb.Schema,
+      interface: :simple,
+      context: %{pubsub: AbsintheFederationExampleWeb.Endpoint}
+  end
   scope "/", AbsintheFederationExampleWeb do
     pipe_through :browser
 
