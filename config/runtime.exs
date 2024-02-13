@@ -13,7 +13,7 @@ roles = (System.get_env("ROLES") || "api") |> String.split(",") |> Enum.map(&Str
 config :absinthe_federation_example, roles: roles
 
 if System.get_env("PHX_SERVER") && :api in roles do
-  config :phoenix_container_example, PhoenixContainerExampleWeb.Endpoint, server: true
+  config :phoenix_container_example, AbsintheFederationExampleWeb.Endpoint, server: true
 end
 
 if config_env() == :prod do
@@ -118,7 +118,7 @@ if config_env() == :prod do
   # Only configure the production mailer if we have AWS credentials
   if System.get_env("AWS_ACCESS_KEY_ID") || System.get_env("AWS_CONTAINER_CREDENTIALS_RELATIVE_URI") do
     config :absinthe_federation_example, AbsintheFederationExample.Mailer, adapter: Swoosh.Adapters.ExAwsAmazonSES
-    config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: PhoenixContainerExample.Finch
+    config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: AbsintheFederationExample.Finch
     # Disable Swoosh Local Memory Storage
     config :swoosh, local: false
   end
