@@ -11,6 +11,10 @@ defmodule AbsintheFederationExampleWeb.Endpoint do
     same_site: "Lax"
   ]
 
+  @app :absinthe_federation_example
+
+  plug KubernetesHealthCheck.Plug, mod: AbsintheFederationExample.Health
+
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]
@@ -37,6 +41,8 @@ defmodule AbsintheFederationExampleWeb.Endpoint do
   plug Phoenix.LiveDashboard.RequestLogger,
     param_key: "request_logger",
     cookie_key: "request_logger"
+
+  plug Uinta.Plug, Application.compile_env(@app, Uinta.Plug, [])
 
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
