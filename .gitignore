@@ -31,7 +31,43 @@ absinthe_federation_example-*.tar
 # Ignore digested assets cache.
 /priv/static/cache_manifest.json
 
+/build
+
+# Since we are building assets from assets/,
+# we ignore priv/static. You may want to comment
+# this depending on your deployment strategy.
+/priv/static/
+
 # In case you use Node.js/npm, you want to ignore these.
 npm-debug.log
+
+# The directory NPM downloads your dependencies sources to.
 /assets/node_modules/
 
+/.elixir_ls
+/.env
+/.envrc
+/.hex/
+/.mix/
+/.vscode-server/
+/.vscode/
+/dregsy.yml
+
+/artifacts/
+/reports/
+/junit-reports/
+/sarif-reports/
+
+# Editor temp files
+*.swp
+
+# OS files when mounting dev container
+/.bash_history
+/.dotnet
+/.ssh/
+/.gitconfig
+/.gnupg/
+/.vscode-server/
+
+# macOS junk
+.DS_Store
