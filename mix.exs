@@ -61,6 +61,12 @@ defmodule AbsintheFederationExample.MixProject do
 
   defp deps do
     [
+      {:absinthe, "~> 1.7"},
+      # {:absinthe_ecto, "~> 0.1.3"},
+      {:absinthe_federation, "~> 0.3"},
+      # {:absinthe_phoenix, "~> 2.0"},
+      {:absinthe_plug, "~> 1.5"},
+      {:absinthe_relay, "~> 1.5"},
       {:aws_rds_castore, "~> 1.1"},
       {:bandit, "~> 1.2"},
       {:castore, "~> 1.0"},
