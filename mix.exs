@@ -102,7 +102,7 @@ defmodule AbsintheFederationExample.MixProject do
       {:opentelemetry_api, "~> 1.1"},
       {:opentelemetry_ecto, "~> 1.0"},
       # {:opentelemetry_logger_metadata, "~> 0.1.0"},
-      {:opentelemetry_cowboy, "~> 0.2.1"},
+      # {:opentelemetry_cowboy, "~> 0.2.1"},
       {:opentelemetry_liveview, "~> 1.0.0-rc.4"},
       {:opentelemetry_phoenix, "~> 1.0"},
       {:opentelemetry_xray, github: "cogini/opentelemetry_xray"},

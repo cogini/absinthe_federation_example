@@ -10,7 +10,7 @@ defmodule AbsintheFederationExample.Application do
   @impl true
   def start(_type, _args) do
     OpentelemetryEcto.setup([@app, :repo])
-    :opentelemetry_cowboy.setup()
+    # :opentelemetry_cowboy.setup()
     # OpentelemetryPhoenix.setup(adapter: :cowboy2)
     OpentelemetryLiveView.setup()
 
