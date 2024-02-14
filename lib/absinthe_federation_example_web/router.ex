@@ -24,6 +24,7 @@ defmodule AbsintheFederationExampleWeb.Router do
       interface: :simple,
       context: %{pubsub: AbsintheFederationExampleWeb.Endpoint}
   end
+
   scope "/", AbsintheFederationExampleWeb do
     pipe_through :browser
 
