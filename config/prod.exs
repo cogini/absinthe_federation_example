@@ -8,7 +8,7 @@ import Config
 config :absinthe_federation_example, AbsintheFederationExampleWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
-config :phoenix_container_example, Uinta.Plug, format: :map
+config :absinthe_federation_example, Uinta.Plug, format: :map
 # Include GraphQL variables in log line
 # include_variables: true,
 # ignored_paths: [],

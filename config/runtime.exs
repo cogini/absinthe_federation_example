@@ -13,7 +13,7 @@ roles = (System.get_env("ROLES") || "api") |> String.split(",") |> Enum.map(&Str
 config :absinthe_federation_example, roles: roles
 
 if System.get_env("PHX_SERVER") && :api in roles do
-  config :phoenix_container_example, AbsintheFederationExampleWeb.Endpoint, server: true
+  config :absinthe_federation_example, AbsintheFederationExampleWeb.Endpoint, server: true
 end
 
 if config_env() == :prod do

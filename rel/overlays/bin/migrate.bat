@@ -1,1 +1,1 @@
-call "%~dp0\phoenix_container_example" eval AbsintheFederationExample.Release.migrate
+call "%~dp0\prod" eval AbsintheFederationExample.Release.migrate
