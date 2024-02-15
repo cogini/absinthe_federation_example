@@ -1078,10 +1078,10 @@ jobs:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           cluster: ${{ env.ECS_CLUSTER }}
           service: ${{ env.ECS_SERVICE }}
-          wait-for-service-stability: true
-          codedeploy-appspec: ${{ env.APPSPEC }}
-          codedeploy-application: ${{ env.CODEDEPLOY_APPLICATION }}
-          codedeploy-deployment-group: ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }}
+          # wait-for-service-stability: true
+          # codedeploy-appspec: ${{ env.APPSPEC }}
+          # codedeploy-application: ${{ env.CODEDEPLOY_APPLICATION }}
+          # codedeploy-deployment-group: ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }}
 
   tag:
     name: Tag prod images as latest
